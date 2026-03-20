@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 # initialize the fastapi app
 app = FastAPI()
@@ -8,10 +8,15 @@ app = FastAPI()
 def home():
     return {"message": "Welcome to the FastAPI Ecommerce API"}
 
-# define a route for the users URL
-@app.get("/users")
-def get_users():
-    return ["Yug Prakash", "Rudraksh Sachdeva", "Aarav", "Shivansee"]
+# define a dynamic route for the users URL
+@app.get("/users/{id}")
+def get_users(id: int):
+    users = ["Yug Prakash", "Rudraksh Sachdeva", "Aarav", "Shivansee"]
+    return (
+        users[id]
+        if id < len(users)
+        else HTTPException(status_code=404, detail="User not found")
+    )
 
 # define a route for the users URL with a path parameter
 @app.get("/users/{user_id}")
