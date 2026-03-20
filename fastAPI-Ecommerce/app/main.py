@@ -32,13 +32,38 @@ def get_products():
 
 
 @app.get("/products")
-# define a query parameter for the products URL with a default value of None and a minimum length of 1 and a maximum length of 50 and a description of "Search by product name (case insensitive)"
+# define a query parameter for the products URL with a default value of None and a minimum length of 1 and a maximum length of 50 and a description of "Search by product name (case insensitive) or sort by price (True for ascending, False for descending) or order of the products (asc for ascending, desc for descending) or limit the number of products to return or pagination offset"
 def list_products(
+    # search by product name (case insensitive)
     name : str = Query(
         default=None, 
         min_length=1, 
         max_length=50, 
-        description="Search by product name (case insensitive)")
+        description="Search by product name (case insensitive)"),
+
+    # sort by price (True for ascending, False for descending)
+    sort_by_price: bool = Query(
+            default=False,
+            description="Sort products by price (True for ascending, False for descending)"
+        ),
+    # order of the products (asc for ascending, desc for descending)
+    order: str = Query(
+            default="asc",
+            description="Order of the products (asc for ascending, desc for descending)"
+        ),
+    # limit the number of products to return
+    limit: int = Query(
+            default=10,
+            ge=1,
+            le=100,
+            description="Limit the number of products to return"
+        ),
+    # pagination offset, pagination is used to return the products in pages
+    offset: int = Query(
+            default=0,
+            ge=0,
+            description="Pagination Offset"
+        )
     ):
 
     # list out all the products
@@ -51,12 +76,19 @@ def list_products(
         # filter the products based on the name
         products = [p for p in products if needle in p.get("name", "").lower()]
 
-        # if the products are not found, then raise an HTTPException
-        if not products:
-            raise HTTPException(status_code=404, detail="Product not found")
+    # if the products are not found, then raise an HTTPException
+    if not products:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    if sort_by_price:
+        reverse = order == "desc"
+        products = sorted(products, key=lambda p: p.get("price", 0), reverse=reverse)
         
-        # get the total number of products
-        total = len(products)
+    # get the total number of products
+    total = len(products)
+
+    # get the products based on the limit and offset
+    product_list = products[offset:offset+limit]
     
     # return the total number of products and the list of products
-    return {"total": total, "products": products}
+    return {"total": total, "limit": limit, "offset": offset, "products": product_list}
