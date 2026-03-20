@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
+from services.products import get_all_products
+
 # initialize the fastapi app
 app = FastAPI()
 
@@ -22,3 +24,8 @@ def get_users(id: int):
 @app.get("/users/{user_id}")
 def get_user(user_id: int):
     return {"user_id": user_id}
+
+# define a route for the products URL
+@app.get("/products")
+def get_products():
+    return get_all_products()
