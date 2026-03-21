@@ -6,11 +6,14 @@ from typing import Annotated
 
 from app.routes import todo
 
-from test import QueryParams
+
 
 from fastapi.exceptions import RequestValidationError
 
 from fastapi.responses import JSONResponse
+
+from dotenv import load_dotenv
+import os
 
 
 app = FastAPI() # initializes the FastAPI app
@@ -38,10 +41,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.get("/")
-def home(query: Annotated[QueryParams, Depends()]):
+def home():
 
     
-    return {"message": "Welcome to the TodoApp API", "query_params": query}
+    return {
+        "message": "Welcome to the TodoApp API",
+        "app_name": os.getenv("APP_NAME")}
 
 # @app.post("/todo")
 # def create_todo(item: dict):
