@@ -2,6 +2,9 @@
 
 from fastapi import APIRouter
 
+from app.models.todo import CreateTodo
+
+# initializes the APIRouter with a prefix of "/todo", which means that all routes defined in this router will be prefixed with "/todo". For example, the route defined as @router.get("/") will be accessible at "/todo/".
 router = APIRouter(
     prefix="/todo"
 )
@@ -9,3 +12,8 @@ router = APIRouter(
 @router.get("/")
 def read_todos():
     return {"message": "Hello, World!"}
+
+
+@router.post("/")
+def store(item: CreateTodo):
+    return {"message": "Todo item created", "item": item.model_dump()}
