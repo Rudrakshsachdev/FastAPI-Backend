@@ -56,6 +56,9 @@ from db.session import SessionLocal, engine
 from db.base import Base
 from schemas.todos import TodoCreate
 from fastapi.middleware.cors import CORSMiddleware
+from api.v1.endpoints import auth
+
+
 
 # Read all the models & create the database tables
 Base.metadata.create_all(bind=engine)
@@ -63,6 +66,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 # here we include the router for the todos endpoints, with a prefix and tags for better organization
 app.include_router(todos.router, prefix="/api/v1/todos", tags=["todos"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 
 @app.get("/")
 def read_root():
