@@ -7,6 +7,8 @@ from schemas.todos import TodoCreate
 
 from fastapi import HTTPException
 
+from typing import Optional
+
 # this function creates a new todo item in the database. It takes a database session and a TodoCreate schema as input, creates a new Todo model instance, adds it to the session, commits the transaction to save it to the database, refreshes the instance to get the generated ID, and then returns the newly created todo item.
 def create_todo(db: Session, todo: TodoCreate):
     db_todo = Todo(title=todo.title, completed=todo.completed)
@@ -16,8 +18,25 @@ def create_todo(db: Session, todo: TodoCreate):
     return db_todo
 
 # function to retrieve all todo items from the database. It takes a database session as input and returns a list of all Todo items by querying the database.
-def get_all_todos(db: Session):
-    return db.query(Todo).all()
+def get_all_todos(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    completed: Optional[bool] = None,
+    q: Optional[str] = None
+):
+    query = db.query(Todo)
+
+    # Filtering
+    if completed is not None:
+        query = query.filter(Todo.completed == completed)
+
+    # Search
+    if q:
+        query = query.filter(Todo.title.ilike(f"%{q}%"))
+
+    # Pagination
+    return query.offset(skip).limit(limit).all()
 
 
 # function to retrieve a specific todo item by its ID. It takes a database session and a todo_id as input, queries the database for a Todo item with the matching ID, and returns it. If no such item is found, it raises an HTTPException with a 404 status code indicating that the todo was not found.

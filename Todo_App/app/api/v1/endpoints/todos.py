@@ -10,6 +10,7 @@ from services.todo_service import(
     update_todo,
     delete_todo
 )
+from typing import Optional
 
 router = APIRouter()
 
@@ -19,8 +20,14 @@ def create(todo: TodoCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[TodoResponse])
-def read(db: Session = Depends(get_db)):
-    return get_all_todos(db)
+def read(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 10,
+    completed: Optional[bool] = None,
+    q: Optional[str] = None
+    ):
+    return get_all_todos(db, skip, limit, completed, q)
 
 @router.get("/{todo_id}", response_model=TodoResponse)
 def read_by_id(todo_id: int, db: Session = Depends(get_db)):
