@@ -52,6 +52,12 @@
 
 from fastapi import FastAPI
 from api.v1.endpoints import todos
+from db.session import SessionLocal, engine
+from db.base import Base
+from schemas.todos import TodoCreate
+
+# Read all the models & create the database tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 # here we include the router for the todos endpoints, with a prefix and tags for better organization
