@@ -106,7 +106,7 @@ def get_product(product_id: str = Path(
     description="Product ID",
     min_length=36,
     max_length=36,
-    example="000444ea-ce3f-4dd7-bee0-f4ccc70fea6a",
+    examples="000444ea-ce3f-4dd7-bee0-f4ccc70fea6a",
 )):
     products = get_all_products()
     

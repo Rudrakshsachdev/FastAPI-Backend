@@ -1,6 +1,9 @@
-from pydantic import BaseModel, Field, Literal, AnyUrl ,field_validator, model_validator, computed_field
+from pydantic import BaseModel, Field, Literal, AnyUrl ,field_validator, model_validator, computed_field, EmailStr
+
 from typing import Annotated, List, Optional, Dict
 from uuid import UUID
+
+from datetime import datetime
 
 # Here, we are defining a schema for the products using pydantic
 # This schema is used to validate the data that is sent to the API
@@ -210,3 +213,32 @@ class Products(BaseModel):
     @property
     def final_price(self) -> float:
         return round(self.price * (1 - self.discount_percent / 100), 2)
+
+
+
+class Seller(BaseModel):
+    id: UUID
+    name: Annotated[
+        str,
+        Field(
+            min_length=2,
+            max_length=50,
+            description="Seller Name",
+            examples=["Seller Name", "Seller Name", "Seller Name"],
+        ),
+    ]
+    email: EmailStr
+
+    website: AnyUrl
+
+    @field_validator("email", mode="after")
+    @classmethod
+    def validate_seller_email_domain(cls, value: EmailStr):
+        allowed_domains = ["mistore.com", "hpworld.in"]
+
+        domain = str(value).split("@")[1].lower()
+        if domain not in allowed_domains:
+            raise ValueError("Seller email domain is not allowed")
+            
+        return value
+
