@@ -55,6 +55,7 @@ from api.v1.endpoints import todos
 from db.session import SessionLocal, engine
 from db.base import Base
 from schemas.todos import TodoCreate
+from fastapi.middleware.cors import CORSMiddleware
 
 # Read all the models & create the database tables
 Base.metadata.create_all(bind=engine)
@@ -66,3 +67,12 @@ app.include_router(todos.router, prefix="/api/v1/todos", tags=["todos"])
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # for dev only
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
