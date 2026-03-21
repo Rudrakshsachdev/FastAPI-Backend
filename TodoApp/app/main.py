@@ -1,12 +1,17 @@
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
+
+from typing import Annotated
+
+from test import QueryParams
+
 
 app = FastAPI()
 
 @app.get("/")
-def home(request :Request):
+def home(query: Annotated[QueryParams, Depends()]):
 
-    params = request.query_params
-    return {"message": "Welcome to the TodoApp API", "query_params": params}
+    
+    return {"message": "Welcome to the TodoApp API", "query_params": query}
 
 @app.post("/todo")
 def create_todo(item: dict):
